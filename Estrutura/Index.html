@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cantina Digital</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        header {
+            background-color: #ff5722;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+        .produtos {
+            flex: 2;
+            min-width: 300px;
+        }
+        .grid-produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .card-produto {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card-produto:hover {
+            transform: translateY(-5px);
+        }
+        .preco {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #e64a19;
+        }
+        
+        /* Estilos do Carrinho */
+        .carrinho {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        #lista-carrinho {
+            list-style: none;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #lista-carrinho li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-remover {
+            background-color: #ff3333;
+            width: 25px;
+            height: 25px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-remover:hover {
+            background-color: #cc0000;
+        }
+        .resumo {
+            margin-top: 20px;
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            font-size: 1.2rem;
+        }
+        .btn-finalizar {
+            background-color: #4CAF50;
+            margin-top: 15px;
+        }
+        .btn-finalizar:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilos do Modal (Janela Pop-up) */
+        .modal {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .modal-content h3 {
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .botoes-modal {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-cancelar {
+            background-color: #999;
+        }
+        .btn-cancelar:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🍔 Cantina Digital</h1>
+        <p>Faça seu pedido de forma rápida e fácil!</p>
+    </header>
+
+    <main class="container">
+        <section class="produtos">
+            <h2>Nosso Cardápio</h2>
+            <div class="grid-produtos">
+                <div class="card-produto">
+                    <h3>Coxinha de Frango</h3>
+                    <p class="preco">R$ 6,00</p>
+                    <button onclick="adicionarAoCarrinho('Coxinha de Frango', 6.00)">Adicionar</button>
+                </div>
+                <div class="card-produto">
+                    <h3>Pão de Queijo</h3>
+                    <p class="preco">R$ 4,50</p>
+                    <button onclick="adicionarAoCarrinho('Pão de Queijo', 4.50)">Adicionar</button>
+                </div>
+                <!-- Produto alterado para abrir o Modal -->
+                <div class="card-produto">
+                    <h3>Refrigerante</h3>
+                    <p class="preco">A partir de R$ 3,00</p>
+                    <button onclick="abrirModalBebida()">Escolher Opção</button>
+                </div>
+                <div class="card-produto">
+                    <h3>Brigadeiro</h3>
+                    <p class="preco">R$ 3,00</p>
+                    <button onclick="adicionarAoCarrinho('Brigadeiro', 3.00)">Adicionar</button>
+                </div>
+            </div>
+        </section>
+
+        <aside class="carrinho">
+            <h2>🛒 Seu Pedido</h2>
+            <ul id="lista-carrinho"></ul>
+            <div class="resumo">
+                <p><strong>Total:</strong> R$ <span id="valor-total">0,00</span></p>
+                <button class="btn-finalizar" onclick="finalizarPedido()">Finalizar Pedido</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modal de Escolha de Bebida -->
+    <div id="modal-bebida" class="modal">
+        <div class="modal-content">
+            <h3>Escolha seu Refrigerante</h3>
+            
+            <div class="form-group">
+                <label for="marca-refri">Marca:</label>
+                <select id="marca-refri">
+                    <option value="Coca-Cola">Coca-Cola</option>
+                    <option value="Guaraná Antarctica">Guaraná Antarctica</option>
+                    <option value="Pepsi">Pepsi</option>
+                    <option value="Sprite">Sprite</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tamanho-refri">Tamanho:</label>
+                <!-- O "value" aqui é o preço de cada tamanho -->
+                <select id="tamanho-refri">
+                    <option value="3.00">200 ml - R$ 3,00</option>
+                    <option value="6.00">500 ml - R$ 6,00</option>
+                    <option value="12.00">2 Litros - R$ 12,00</option>
+                </select>
+            </div>
+
+            <div class="botoes-modal">
+                <button class="btn-cancelar" onclick="fecharModalBebida()">Cancelar</button>
+                <button onclick="confirmarBebida()">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let carrinho = [];
+
+        // --- FUNÇÕES DO CARRINHO ---
+
+        function adicionarAoCarrinho(nome, preco) {
+            carrinho.push({ nome, preco });
+            atualizarCarrinho();
+        }
+
+        // Nova função para remover itens
+        function removerDoCarrinho(index) {
+            // O splice remove 1 elemento a partir da posição (index) informada
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const lista = document.getElementById('lista-carrinho');
+            const spanTotal = document.getElementById('valor-total');
+            
+            lista.innerHTML = '';
+            let total = 0;
+
+            // O (item, index) permite sabermos a posição exata de cada item no array
+            carrinho.forEach((item, index) => {
+                total += item.preco;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.nome}</span>
+                    <div class="item-info">
+                        <span>R$ ${item.preco.toFixed(2).replace('.', ',')}</span>
+                        <button class="btn-remover" onclick="removerDoCarrinho(${index})" title="Remover item">X</button>
+                    </div>
+                `;
+                lista.appendChild(li);
+            });
+
+            spanTotal.textContent = total.toFixed(2).replace('.', ',');
+        }
+
+        function finalizarPedido() {
+            if (carrinho.length === 0) {
+                alert("Seu carrinho está vazio! Adicione algum lanche antes de finalizar.");
+                return;
+            }
+            alert(`Pedido finalizado com sucesso! Valor total: R$ ${document.getElementById('valor-total').textContent}`);
+            carrinho = [];
+            atualizarCarrinho();
+        }
+
+        // --- FUNÇÕES DO MODAL DE BEBIDAS ---
+
+        const modal = document.getElementById('modal-bebida');
+
+        function abrirModalBebida() {
+            modal.style.display = 'flex';
+        }
+
+        function fecharModalBebida() {
+            modal.style.display = 'none';
+        }
+
+        function confirmarBebida() {
+            const marcaSelect = document.getElementById('marca-refri');
+            const tamanhoSelect = document.getElementById('tamanho-refri');
+            
+            const marca = marcaSelect.value;
+            // Pegamos o texto da opção selecionada (ex: "500 ml") para montar o nome final
+            const tamanhoTexto = tamanhoSelect.options[tamanhoSelect.selectedIndex].text.split('-')[0].trim();
+            // Pegamos o value que configuramos no HTML como o preço e convertemos para número
+            const preco = parseFloat(tamanhoSelect.value);
+
+            // Monta o nome final. Ex: "Coca-Cola (500 ml)"
+            const nomeCompleto = `${marca} (${tamanhoTexto})`;
+
+            adicionarAoCarrinho(nomeCompleto, preco);
+            fecharModalBebida();
+        }
+    </script>
+</body>
+</html>
